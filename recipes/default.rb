@@ -10,7 +10,7 @@
 node["libvirt"]["kvm"]["domains"].each do |name,params|
   libvirt_domain name do
     vcpu params['vcpu']
-    memmory params['memmory']
+    memory params['memory']
     if params['arch']
       arch params['arch']
     else
