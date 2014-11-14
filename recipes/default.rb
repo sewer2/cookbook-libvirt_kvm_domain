@@ -9,6 +9,7 @@
 
 node["libvirt"]["kvm"]["domains"].each do |name,params|
   libvirt_domain name do
+    provider 'libvirt_domain_kvm'
     vcpu params['vcpu']
     memory params['memory']
     if params['arch']
