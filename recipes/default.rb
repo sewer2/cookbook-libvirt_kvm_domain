@@ -22,6 +22,7 @@ node["libvirt"]["kvm"]["domains"].each do |name,params|
     else
       action [:define, :create]
     end
+    boot params['boot'] if params['boot']
   end
   if params['disks']
     params['disks'].each do |disk,disk_options|
