@@ -31,6 +31,8 @@ node["libvirt"]["kvm"]["domains"].each do |name,params|
         source disk_options['source']
         target disk_options['target'] if disk_options['target']
         domain name
+        action :nothing
+        subscribes :attach, resources(:libvirt_domain => name), :immediately
       end
     end
   end
@@ -41,6 +43,8 @@ node["libvirt"]["kvm"]["domains"].each do |name,params|
         model net_options['model'] if net_options['model']
         source net_options['source']
         domain name
+        action :nothing
+        subscribes :attach, resources(:libvirt_domain => name), :immediately
       end
     end
   end
