@@ -10,19 +10,13 @@
 node["libvirt"]["kvm"]["domains"].each do |name,params|
   libvirt_domain name do
     provider 'libvirt_domain_kvm'
-    vcpu params['vcpu']
-    memory params['memory']
-    if params['arch']
-      arch params['arch']
-    else
-      arch 'amd64'
-    end
-    if params['autostart']
+    autostart=params.delete('autostart')
+    conf_mash params
+    if autostart
       action [:define, :create, :autostart]
     else
       action [:define, :create]
     end
-    boot params['boot'] if params['boot']
   end
   if params['disks']
     params['disks'].each do |disk,disk_options|
