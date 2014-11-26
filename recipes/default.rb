@@ -10,8 +10,8 @@
 node["libvirt"]["kvm"]["domains"].each do |name,params|
   libvirt_domain name do
     provider 'libvirt_domain_kvm'
-    conf_mash params
-    if params.delete('autostart')
+    conf_mash params.select{ |k,v| k != 'autostart' }
+    if params['autostart']
       action [:define, :create, :autostart]
     else
       action [:define, :create]
