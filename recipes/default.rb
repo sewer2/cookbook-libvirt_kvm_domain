@@ -6,19 +6,28 @@
 #
 # All rights reserved - Do Not Redistribute
 #
+reserve=['disks', 'networks', 'autostart']
+kvms=node['libvirt']['kvm']['domains'].select{ |k,v| k!= 'default_params' }
+default=node['libvirt']['kvm']['domains']['default_params'].to_hash
 
-node["libvirt"]["kvm"]["domains"].each do |name,params|
+kvms.each do |name,params|
+  config = params.to_hash
+  config = Chef::Mixin::DeepMerge.merge(config, default)
+  custom = config
+  reserve.each do |word|
+    custom.delete_if{ |k, v| k == word }
+  end
   libvirt_domain name do
     provider 'libvirt_domain_kvm'
-    conf_mash params.select{ |k,v| k != 'autostart' }
-    if params['autostart']
+    conf_mash custom
+    if config['autostart']
       action [:define, :create, :autostart]
     else
       action [:define, :create]
     end
   end
-  if params['disks']
-    params['disks'].each do |disk,disk_options|
+  if config['disks']
+    config['disks'].each do |disk,disk_options|
       libvirt_disk_device disk do
         type disk_options['type'] if disk_options['type']
         bus disk_options['bus'] if disk_options['bus']
@@ -29,8 +38,8 @@ node["libvirt"]["kvm"]["domains"].each do |name,params|
       end
     end
   end
-  if params['networks']
-    params['networks'].each do |mac,net_options|
+  if config['networks']
+    config['networks'].each do |mac,net_options|
       libvirt_network_interface mac do
         type net_options['type'] if net_options['type']
         model net_options['model'] if net_options['model']
