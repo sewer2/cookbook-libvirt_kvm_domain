@@ -19,8 +19,11 @@ kvms.each do |name,params|
   libvirt_domain name do
     provider 'libvirt_domain_kvm'
     conf_mash config
-    autostart autostart if autostart
-    action [:define, :create ]
+    if autostart
+      action [:define, :create, :autostart]
+    else
+      action [:define, :create]
+    end
   end
   if config['disks']
     config['disks'].each do |disk,disk_options|
